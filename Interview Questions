@@ -1,0 +1,68 @@
+Interview Questions: Data Cleaning & Preprocessing
+
+Here are the answers to the required interview questions, covering the fundamental concepts of data preparation for machine learning.
+
+1. What are the different types of missing data?
+
+Missing data types are classified based on the relationship between the missingness and the observed/unobserved values.
+MCAR (Missing Completely at Random): Probability of missingness is unrelated to the data. Handled by simple imputation (mean/median) or deletion.
+MAR (Missing at Random): Probability of missingness is related to observed data. Handled by sophisticated imputation (e.g., regression imputation).
+MNAR (Missing Not at Random): Probability of missingness is related to the missing value itself. Requires specialized statistical modeling.
+
+2. How do you handle categorical variables?
+
+Categorical variables (like Sex or Embarked) must be converted into a numerical format for most machine learning algorithms.
+Label Encoding: Assigns a unique integer to each category.
+Use Case: Binary variables (like Sex) or ordinal variables where the order matters (e.g., Small < Medium < Large).
+Caution: Avoid for nominal variables, as the model may incorrectly interpret the numerical order as a rank.
+One-Hot Encoding: Creates a new binary (dummy) column for each category.
+Use Case: Nominal variables where no inherent order exists (like Embarked). This is the preferred method as it prevents the model from assuming an arbitrary hierarchy.
+
+3. What is the difference between normalization and standardization?
+
+Both are forms of feature scaling used to bring all features to a similar scale
+Normalization (Min-Max Scaling): Scales data to a fixed range (usually [0, 1]). Highly sensitive to outliers.
+Standardization (Z-score Scaling): Scales data to have a mean of 0 and a standard deviation of 1. Less sensitive to outliers; preferred when data is normally distributed.
+
+4. How do you detect outliers?
+
+Outliers are data points that significantly deviate from other observations.
+Visualization:
+Box Plots: Visually identify data points outside the fences (typically $1.5 \times \text{IQR}$ beyond $Q1$ and $Q3$).
+Histograms/Scatter Plots: Help spot extreme values.
+Statistical Methods:
+Z-score: Calculates how many standard deviations a value is from the mean. A common threshold is $|Z| > 3$.
+IQR (Interquartile Range): Defines the boundary as $1.5 \times \text{IQR}$ below $Q1$ and above $Q3$. This is the most robust method for non-normal distributions (used in our script).
+Handling Outliers: Instead of deleting data points, common handling techniques include Capping (Winsorization), where outliers are replaced with the boundary values (as done in our script), or Log Transformation to reduce the magnitude of skewed data.
+
+5. Why is preprocessing important in ML?
+
+Preprocessing is vital because machine learning algorithms rely on numerical input, and the quality, scale, and format of the input data directly impact the model's performance.
+Model Compatibility: Ensures algorithms receive data in the expected numerical format (e.g., encoding categorical data).
+Performance & Speed: Scaling features ensures features contribute equally to the model. Without scaling, features with large numerical ranges (e.g., salary) can dominate training, leading to slower convergence.
+Accuracy & Robustness: Handling missing values and outliers prevents the model from learning incorrect or biased relationships, resulting in more robust and accurate predictions.
+
+6. What is one-hot encoding vs label encoding?
+
+Label Encoding:
+Action: Assigns an integer (0, 1, 2, ...) to each unique category.
+Best Used For: Binary features or Ordinal features (where the order matters).
+One-Hot Encoding:
+Action: Creates a new binary (dummy) feature for each unique category.
+Best Used For: Nominal features (where the order does not matter, like Embarked). It prevents the model from incorrectly interpreting the assigned numbers as a ranking.
+
+7. How do you handle data imbalance?
+
+Data imbalance occurs when the number of observations in one class (the minority class) is heavily outnumbered by the other class (the majority class).
+Sampling Techniques:
+Oversampling (SMOTE): Creates synthetic examples of the minority class to balance the dataset. (Most popular method).
+Undersampling: Reduces the size of the majority class. (Risk: may discard useful data).
+Algorithmic Techniques:
+Change Evaluation Metric: Use metrics robust to imbalance, such as Precision, Recall, F1-Score, or AUC-ROC instead of simple Accuracy.
+Use Class Weights: Assign higher penalty weights to misclassifications of the minority class (a parameter available in many models like Random Forest).
+
+8. Can preprocessing affect model accuracy?
+
+Yes, absolutely. Preprocessing has a massive impact on model accuracy and reliability.
+Positive Impact: Correct scaling helps optimization algorithms converge faster and find a better minimum. Proper outlier treatment prevents the model boundaries from being overly skewed by noise, making the model more robust and accurate.
+Negative Impact: Using incorrect techniques, such as applying Label Encoding to nominal data, or using mean imputation on heavily skewed data, can introduce strong bias, confuse the model, and ultimately reduce its predictive accuracy.
