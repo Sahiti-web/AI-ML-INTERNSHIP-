@@ -1,0 +1,82 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from scipy.stats import zscore
+
+df = pd.read_csv('Titanic-Dataset.csv')
+
+print("--- Initial Data Information ---")
+print(df.info())
+print("\nMissing values before cleaning:")
+print(df.isnull().sum())
+print("-" * 40)
+
+median_age = df['Age'].median()
+df['Age'].fillna(median_age, inplace=True)
+print(f"Age missing values imputed with median: {median_age}")
+
+mode_embarked = df['Embarked'].mode()[0]
+df['Embarked'].fillna(mode_embarked, inplace=True)
+print(f"Embarked missing values imputed with mode: {mode_embarked}")
+
+df.drop('Cabin', axis=1, inplace=True)
+print("Cabin column dropped due to excessive missing data.")
+
+median_fare = df['Fare'].median()
+df['Fare'].fillna(median_fare, inplace=True)
+
+print("\nMissing values after imputation:")
+print(df.isnull().sum())
+print("-" * 40)
+
+df.drop(['PassengerId', 'Name', 'Ticket'], axis=1, inplace=True)
+print("Dropped 'PassengerId', 'Name', and 'Ticket'.")
+print("-" * 40)
+
+df['Sex_Encoded'] = df['Sex'].map({'male': 1, 'female': 0})
+df.drop('Sex', axis=1, inplace=True)
+print("Sex column converted to binary 'Sex_Encoded'.")
+
+df = pd.get_dummies(df, columns=['Embarked'], drop_first=True, prefix='Embarked')
+print("Embarked column one-hot encoded.")
+print("-" * 40)
+
+print("--- Outlier Detection for Fare ---")
+plt.figure(figsize=(10, 4))
+sns.boxplot(x=df['Fare'])
+plt.title('Boxplot of Fare (Outlier Visualization)')
+plt.show()
+
+feature = 'Fare'
+Q1 = df[feature].quantile(0.25)
+Q3 = df[feature].quantile(0.75)
+IQR = Q3 - Q1
+lower_bound = Q1 - 1.5 * IQR
+upper_bound = Q3 + 1.5 * IQR
+
+print(f"Original max Fare: {df[feature].max():.2f}")
+print(f"Upper bound (Capping value): {upper_bound:.2f}")
+
+df[feature] = np.where(df[feature] > upper_bound, upper_bound, df[feature])
+df[feature] = np.where(df[feature] < lower_bound, lower_bound, df[feature])
+
+print(f"Max Fare after capping: {df[feature].max():.2f}")
+print("-" * 40)
+
+mean_age = df['Age'].mean()
+std_age = df['Age'].std()
+mean_fare = df['Fare'].mean()
+std_fare = df['Fare'].std()
+
+df['Age_Scaled'] = (df['Age'] - mean_age) / std_age
+df['Fare_Scaled'] = (df['Fare'] - mean_fare) / std_fare
+
+df.drop(['Age', 'Fare'], axis=1, inplace=True)
+print("Age and Fare standardized and original columns dropped.")
+
+print("\n--- Final Preprocessed Data Info ---")
+print(df.info())
+print("\nFirst 5 rows of the cleaned and preprocessed dataset:")
+print(df.head())
+print("-" * 40)
